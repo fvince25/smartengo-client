@@ -1,0 +1,33 @@
+<div class="LRFullLayer">
+  <div class="LRContainer">
+    <app-lrheader>
+    </app-lrheader>
+    <div class="LRContent flexVerticalCentered">
+      <form (ngSubmit)="onValidSigninForm()" [formGroup]="signinForm">
+
+        <div class="Field">
+          <label for="email">Email</label>
+          <input formControlName="email" id="email" type="email">
+        </div>
+
+        <div class="Field">
+          <label for="password">Password</label>
+          <input formControlName="password" id="password" type="password">
+        </div>
+
+        <div class="Field checkbox">
+          <input formControlName="keepConnected" id="keepConnected" type="checkbox">
+          <label style="padding-left: 10px;font-size: 13px;"
+                 for="keepConnected">Remember
+            me</label>
+        </div>
+
+        <div class="Field" style="text-align: center;">
+          <input [disabled]="signinForm.invalid" type="submit"
+                 class="validFormButton" value="sign-in">
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

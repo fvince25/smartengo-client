@@ -1,0 +1,38 @@
+<div class="LRFullLayer">
+  <div class="LRContainer">
+    <app-lrheader>
+    </app-lrheader>
+    <div class="LRContent flexVerticalCentered">
+      <form (ngSubmit)="onValidRegisterForm()" [formGroup]="registerForm">
+
+        <div class="Field">
+          <label for="username">Username</label>
+          <input formControlName="username" id="username" type="text">
+        </div>
+
+        <div class="Field">
+          <label for="email">Email</label>
+          <input formControlName="email" id="email" type="email">
+        </div>
+
+        <div class="Field">
+          <label for="password">Password</label>
+          <input formControlName="password" id="password" type="password">
+        </div>
+
+        <div class="Field">
+          <label for="password">Confirm password</label>
+          <input formControlName="confirmPassword" id="confirmPassword"
+                 type="password">
+        </div>
+
+
+        <div class="Field" style="text-align: center;">
+          <input [disabled]="registerForm.invalid" type="submit"
+                 class="validFormButton" value="create account">
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

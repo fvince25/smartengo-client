@@ -1,1 +1,126 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$client-primary: mat-palette($mat-indigo);
+$client-accent: mat-palette($mat-pink, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$client-warn: mat-palette($mat-red);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$client-theme: mat-light-theme((
+  color: (
+    primary: $client-primary,
+    accent: $client-accent,
+    warn: $client-warn,
+  )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($client-theme);
+
 /* You can add global styles to this file, and also import other style files */
+
+.LRFullLayer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+
+  .LRContainer {
+    width: 100%;
+    max-width: 500px;
+    height: 100%;
+    max-height: 500px;
+
+    .LRContent {
+      border-bottom: 1px solid black;
+      border-right: 1px solid black;
+      border-left: 1px solid black;
+      height: 100%;
+      width: 100%;
+
+      form {
+
+        width: 90%;
+        max-width: 300px;
+
+        .Field:not(.checkbox) {
+
+          padding: 20px 0;
+
+          label {
+            display: block;
+          }
+
+          input {
+            width: 100%;
+          }
+
+          .validFormButton {
+            background-color: blue;
+            color: white;
+            width:auto;
+            display: inline-block;
+            padding:5px 10px;
+            border-radius: 3px;
+
+            &:hover {
+              background-color: #4b4bfc;
+              cursor: pointer;
+
+            }
+
+            &[disabled] {
+              background-color: #81c2ee;
+            }
+
+          }
+        }
+
+        .Field.checkbox {
+          display: flex;
+          align-items: center;
+
+          label {
+            padding: 0;
+            margin: 0;
+          }
+        }
+
+
+
+
+      }
+
+    }
+  }
+}
+
+.flexVerticalCentered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+
+
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
