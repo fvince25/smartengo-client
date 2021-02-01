@@ -11,7 +11,7 @@ import {AuthKeepService} from './shared/services/auth-keep.service';
 const APP_ROUTES: Routes = [
   {path: '', redirectTo: 'connexion', pathMatch: 'full'},
   {path: 'connexion', component: ConnexionComponent, canActivate: [AuthKeepService]},
-  {path: 'inscription', component: InscriptionComponent, canActivate: [AuthKeepService]},
+  {path: 'inscription', component: InscriptionComponent},
     {
         path: 'article', children: [
             {

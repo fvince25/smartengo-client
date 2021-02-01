@@ -27,7 +27,7 @@ export class ArticleComponent implements OnInit {
 
     public textComment: string = '';
     public articleProtected: boolean = false;
-    public notExist: boolean = false;
+    public articleNotExist: boolean = false;
     public selectTagDisplayed: boolean = false;
     public chosenTag: string = '';
     public chosenTags: any[];
@@ -77,16 +77,18 @@ export class ArticleComponent implements OnInit {
 
         this.route.paramMap.subscribe(params => {
 
-
+            // Routing "interne"
 
             this.editMode = params.get('action') === 'edit' || params.get('id') === 'new';
             this.idArticle = params.get('id');
 
-
-
             this.defaultMode = false;
             this.articleProtected = false;
-            this.article.downloadTags().then(() => {
+
+            // Download tag peut être "synchone" ou "asynchrone"
+            // (suivant si les tags sont déja présents)
+
+            this.article.retrieveTags().then(() => {
 
                 this.creationMode = params.get('id') === 'new';
 
@@ -104,11 +106,11 @@ export class ArticleComponent implements OnInit {
 
                         // Optimisation : Si on ne change pas d'article, on ne le retélécharge pas
                         // On utilise la sauvegarde du service "article"
+
                         if (this.article.currentArticle && this.article.currentArticle.id == this.idArticle) {
 
                             this.currentArticle = this.article.currentArticle;
                             this.processInitialisation();
-
 
                         } else {
 
@@ -116,16 +118,20 @@ export class ArticleComponent implements OnInit {
                             this.article.getArticle(this.idArticle).subscribe((article: Article) => {
 
                                 if (article['status'] === 5) {
-                                    this.notExist = true;
-                                    this.currentArticle = null;
-                                }
 
-                                if (article['status'] === 4) {
+                                    this.articleNotExist = true;
+                                    this.currentArticle = null;
+
+                                } else if (article['status'] === 4) {
+
                                     this.articleProtected = true;
                                     this.currentArticle = null;
+
                                 } else {
+
                                     this.currentArticle = article;
                                     this.processInitialisation();
+
                                 }
 
                             });
@@ -134,25 +140,32 @@ export class ArticleComponent implements OnInit {
 
                 }
 
-
             });
-
-
         });
     }
 
-    editArticle() {
-        this.router.navigate(['/article', this.idArticle, 'edit']);
-    }
 
-    deleteArticle(id: string) {
-        this.article.deleteArticle(id).subscribe((status)=> {
-            alert("l'article a bien été supprimé ");
-            this.router.navigate(['/article']);
+
+
+
+
+    //------------------------------------------------------------------------------------
+    // Initialisation du component
+    //------------------------------------------------------------------------------------
+
+
+    private newArticleInitialisation() : void {
+        this.currentArticle = null;
+        this.article.currentArticle = null;
+        this.articleForm = this.fb.group({
+            name: ['', [Validators.required]],
+            content: [''],
+            draft: [true],
+            selectTag: ['']
         });
     }
 
-    initForm(article: Article) {
+    private initForm(article: Article) : void {
 
         this.articleForm = this.fb.group({
             name: [article.name, [Validators.required]],
@@ -162,7 +175,8 @@ export class ArticleComponent implements OnInit {
         });
     }
 
-    initializeReactions() {
+
+    private initializeReactions() : void{
         this.reactionsCount = {
             like: 0,
             heart: 0,
@@ -185,7 +199,7 @@ export class ArticleComponent implements OnInit {
         };
     }
 
-    initReactions() {
+    private initReactions() : void{
         this.currentArticle.reactions.forEach(reaction => {
 
             if (reaction.user.id == this.auth.userSession.idUser) {
@@ -198,7 +212,7 @@ export class ArticleComponent implements OnInit {
         });
     }
 
-    handleTags() {
+    private initTags() : void {
         this.currentArticle.Tag.forEach(tag => {
             this.article.tags.forEach(tag_ => {
                 if (tag_['id'] == tag) {
@@ -208,20 +222,10 @@ export class ArticleComponent implements OnInit {
         });
     }
 
-    newArticleInitialisation() {
-        this.currentArticle = null;
-        this.article.currentArticle = null;
-        this.articleForm = this.fb.group({
-            name: ['', [Validators.required]],
-            content: [''],
-            draft: [true],
-            selectTag: ['']
-        });
-    }
 
-    processInitialisation() {
+    private processInitialisation() : void {
 
-        this.handleTags();
+        this.initTags();
         this.initReactions();
 
         if (this.editMode) {
@@ -229,12 +233,71 @@ export class ArticleComponent implements OnInit {
         }
     }
 
-    closeEdit(event) {
 
+
+
+
+
+
+    //------------------------------------------------------------------------------------
+    // Actions LECTURE Article
+    //------------------------------------------------------------------------------------
+
+
+    public addComment() : void {
+
+        this.article.addComment(this.textComment).subscribe((comment) => {
+            this.currentArticle.comments.push(comment);
+            this.textComment = '';
+        });
+    }
+
+
+    public toggleReaction(reaction) : void {
+
+        this.myReactions[reaction]['state'] = !this.myReactions[reaction]['state'];
+        if (this.myReactions[reaction]['state']) {
+
+            this.reactionsCount[reaction]++;
+            this.article.addReaction(reaction).subscribe((reactionFromServer) => {
+                this.myReactions[reaction]['id'] = reactionFromServer.id;
+            });
+
+        } else {
+
+            this.reactionsCount[reaction]--;
+            this.article.removeReaction(this.myReactions[reaction]['id']).subscribe((status) => {
+            });
+
+        }
+
+    }
+
+
+
+
+
+
+    //------------------------------------------------------------------------------------
+    // Action EDITION / CREATION
+    //------------------------------------------------------------------------------------
+
+    public editArticle() : void {
+        this.router.navigate(['/article', this.idArticle, 'edit']);
+    }
+
+    public deleteArticle(id: string) : void {
+        this.article.deleteArticle(id).subscribe((status)=> {
+            alert("l'article a bien été supprimé ");
+            this.router.navigate(['/article']);
+        });
+    }
+
+    public closeEdit(event) : void {
         this.router.navigate(['/article', this.currentArticle.id]);
     }
 
-    saveArticle() {
+    public saveArticle() : void {
 
         if (this.creationMode) {
 
@@ -261,23 +324,85 @@ export class ArticleComponent implements OnInit {
 
     }
 
+    // Tags
+    //-------------------------------
 
-    addComment() {
-
-        this.article.addComment(this.textComment).subscribe((comment) => {
-            this.currentArticle.comments.push(comment);
-            this.textComment = '';
-        });
-    }
-
-    addTag() {
+    public addTag() : void {
         this.selectTagDisplayed = !this.selectTagDisplayed;
     }
 
-    searchTag(event) {
+
+    public pickTag() : void {
+
+        let indSelected = this.article.tags.findIndex(tag => tag['id'] == this.chosenTag);
+        if (indSelected >= 0) {
+            this.article.tags[indSelected]['chosen'] = true;
+        }
+        this.selectTagDisplayed = false;
+
+
+    }
+
+    public removeTag(id) : void {
+        let indSelected = this.article.tags.findIndex(tag => tag['id'] == id);
+        if (indSelected >= 0) {
+            this.article.tags[indSelected]['chosen'] = false;
+        }
+    }
+
+
+
+
+
+
+
+
+
+    //-----------------------------------------------------------------------------
+    // Action de Recherche
+    //-----------------------------------------------------------------------------
+
+
+    public mainSearch() : void {
+
+        this.article.searchArticles(
+            this.searchString,
+            this.article.tags.filter(t => t['selectedForSearch']).map(t => t['id'])
+        ).subscribe((articles) => {
+            this.foundArticles = articles;
+            this.misc.multiSort(this.foundArticles, {'createdAt':'desc'})
+        });
+
+    }
+
+    public checkEnterSearch(event) : void {
+        if (event.key === 'Enter') {
+            this.mainSearch();
+        }
+    }
+
+
+    public goToArticle(id: string) : void {
+        this.router.navigate(['/article', id]);
+    }
+
+
+
+
+    // Tag Search
+
+
+    public getTagName(tagApi) {
+
+        return this.article.tags.find(t => {
+            return t['@id'] === tagApi;
+        }).title;
+    }
+
+    public searchTag(event) : void {
 
         const matchingTag = this.article.tags.filter(tag =>!tag['selectedForSearch']).find(tag=> {
-             return tag['title'].startsWith(this.tagString);
+            return tag['title'].startsWith(this.tagString);
         });
 
         if (matchingTag) {
@@ -295,98 +420,31 @@ export class ArticleComponent implements OnInit {
         } else {
             this.tagProposal='';
         }
-
-
     }
 
 
-    toggleReaction(reaction) {
-
-        this.myReactions[reaction]['state'] = !this.myReactions[reaction]['state'];
-        if (this.myReactions[reaction]['state']) {
-
-            this.reactionsCount[reaction]++;
-            this.article.addReaction(reaction).subscribe((reactionFromServer) => {
-                this.myReactions[reaction]['id'] = reactionFromServer.id;
-            });
-
-        } else {
-
-            this.reactionsCount[reaction]--;
-            this.article.removeReaction(this.myReactions[reaction]['id']).subscribe((status) => {
-            });
-
-        }
-
-    }
-
-    pickTag() {
-
-        let indSelected = this.article.tags.findIndex(tag => tag['id'] == this.chosenTag);
-        if (indSelected >= 0) {
-            this.article.tags[indSelected]['chosen'] = true;
-        }
-        this.selectTagDisplayed = false;
-
-
-    }
-
-    removeTag(id) {
-        let indSelected = this.article.tags.findIndex(tag => tag['id'] == id);
-        if (indSelected >= 0) {
-            this.article.tags[indSelected]['chosen'] = false;
-        }
-    }
-
-    getTagName(tagApi) {
-
-        return this.article.tags.find(t => {
-            return t['@id'] === tagApi;
-        }).title;
-    }
-
-    removeTagSearch(id) {
+    public removeTagSearch(id) {
         let indSelected = this.article.tags.findIndex(tag => tag['id'] == id);
         if (indSelected >= 0) {
             this.article.tags[indSelected]['selectedForSearch'] = false;
         }
     }
 
-    pickSorter() {
+
+    public pickSorter() : void{
 
         let crit = this.sortResults.split('-')[0];
         let order = this.sortResults.split('-')[1];
         let sortObj = {}
         sortObj[crit] = order;
         this.misc.multiSort(this.foundArticles,sortObj);
-        console.log(this.sortResults);
 
     }
 
-    mainSearch() {
-
-        this.article.searchArticles(
-            this.searchString,
-            this.article.tags.filter(t => t['selectedForSearch']).map(t => t['id'])
-        ).subscribe((articles) => {
-            this.foundArticles = articles;
-            console.log(this.foundArticles, this.article.tags);
-        });
-
-    }
-
-    checkEnter(event) {
-        if (event.key === 'Enter') {
-            this.mainSearch();
-        }
-    }
 
 
-    goToArticle(id: string) {
-        this.router.navigate(['/article', id]);
-    }
 
-    logout() {
+    public logout() : void {
         this.article.currentArticle = null;
         localStorage.removeItem('jwtToken');
         localStorage.removeItem('idUser');

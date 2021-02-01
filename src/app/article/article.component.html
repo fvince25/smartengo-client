@@ -2,12 +2,12 @@
     <section id="article">
 
 
-<!--        Le conde HTML Ci dessous s'affiche uniquement si les habilitations-->
-<!--        ont bien été fournies à l'utilsiateur.-->
+        <!--        Le conde HTML Ci dessous s'affiche uniquement si les habilitations-->
+        <!--        ont bien été fournies à l'utilsiateur.-->
 
         <div *ngIf="!articleProtected && !defaultMode" id="authorizedSection">
 
-<!--            Formulaire d'édition de l'article-->
+            <!--            Formulaire d'édition de l'article-->
 
             <form *ngIf="(editMode && currentArticle) || creationMode"
                   (ngSubmit)="saveArticle()"
@@ -33,24 +33,25 @@
                                     mat-raised-button
                                     color="accent">Ajouter un tag
                             </button>
-                            <div  id="listTags">
+                            <div id="listTags">
                                 <div *ngFor="let tag of article.tags |
                                 selectedTags:true"
                                      class="chosenTag">{{ tag['title'] }}
                                     <mat-icon (click)="removeTag(tag['id'])"
                                               aria-hidden="false"
-                                              aria-label="Example close icon">close
+                                              aria-label=" close icon">
+                                        close
                                     </mat-icon>
                                 </div>
                             </div>
 
                             <select (change)="pickTag()"
                                     [(ngModel)]="chosenTag"
-                                    formControlName = "selectTag"
+                                    formControlName="selectTag"
                                     [ngModelOptions]="{standalone: true}"
                                     [ngClass]="{'displayed':
                             selectTagDisplayed}" id="tagChoice" name="">
-                                <option value="0" selected> </option>
+                                <option value="0" selected></option>
                                 <option [value]="tag['id']" *ngFor="let tag of
                                         article.tags | selectedTags:false;">
                                     {{tag['title']}}</option>
@@ -78,10 +79,14 @@
 
 
 
+
+
+
+
             <!--            Affichage en lecture de l'article-->
             <div *ngIf="!editMode && currentArticle" id="readArticle">
 
-                <div  id="titleArea">
+                <div id="titleArea">
                     <div *ngIf="article.tags" id="listtagsRead">
                         <div *ngFor="let tag of article.tags |
                         selectedTags:true"
@@ -99,19 +104,19 @@
                             (click)="this.router.navigate(['/article','new'])"
                             *ngIf="!creationMode"
                             aria-hidden="false"
-                            aria-label="Example note_add icon">note_add
+                            aria-label=" note_add icon">note_add
                         </mat-icon>
                         <mat-icon *ngIf="currentArticle.isEditable"
                                   (click)="editArticle()"
                                   aria-hidden="false"
-                                  aria-label="Example edit icon">
+                                  aria-label=" edit icon">
                             edit
                         </mat-icon>
                         <mat-icon *ngIf="currentArticle.user['id'] ===
                         auth.userSession.idUser"
                                   (click)="deleteArticle(currentArticle.id)"
                                   aria-hidden="false"
-                                  aria-label="Example delete icon">
+                                  aria-label=" delete icon">
                             delete
                         </mat-icon>
                     </div>
@@ -129,9 +134,9 @@
                         <div
                             [ngClass]="{'allreadyReacted':myReactions['heart']['state']}"
                             (click)="toggleReaction('heart')"
-                             class="groupReaction">
+                            class="groupReaction">
                             <mat-icon aria-hidden="false"
-                                      aria-label="Example lightbulb icon">
+                                      aria-label=" lightbulb icon">
                                 tag_faces
                             </mat-icon>
                             <span>{{ reactionsCount.heart }}</span>
@@ -140,9 +145,9 @@
                         <div
                             [ngClass]="{'allreadyReacted':myReactions['idea']['state']}"
                             (click)="toggleReaction('idea')"
-                             class="groupReaction">
+                            class="groupReaction">
                             <mat-icon aria-hidden="false"
-                                      aria-label="Example lightbulb icon">
+                                      aria-label=" lightbulb icon">
                                 lightbulb
                             </mat-icon>
                             <span>{{ reactionsCount.idea }}</span>
@@ -150,16 +155,17 @@
 
                         <div
                             [ngClass]="{'allreadyReacted':myReactions['like']['state']}"
-                             (click)="toggleReaction('like')"
-                             class="groupReaction">
+                            (click)="toggleReaction('like')"
+                            class="groupReaction">
                             <mat-icon aria-hidden="false"
-                                      aria-label="Example thumb_up_alt icon">
+                                      aria-label=" thumb_up_alt icon">
                                 thumb_up_alt
                             </mat-icon>
                             <span>{{ reactionsCount.like }}</span>
                         </div>
                     </div>
                 </div>
+
 
 
                 <!--            Affichage des commentaires  -->
@@ -175,7 +181,7 @@
                                 <mat-icon
                                     style="font-size: 50px;margin-left: 25px;"
                                     aria-hidden="false"
-                                    aria-label="Example account_box icon">
+                                    aria-label=" account_box icon">
                                     account_box
                                 </mat-icon>
                             </div>
@@ -185,46 +191,58 @@
                         </div>
                     </div>
 
+
+
+<!--                    Nouveau commentaire-->
                     <div id="writeCommentZone">
                     <textarea [(ngModel)]="textComment" name=""
                               id=""></textarea>
                         <button [disabled]="!textComment" (click)="addComment()"
-                        mat-raised-button
+                                mat-raised-button
                                 color="primary">Ajouter
                         </button>
                     </div>
                 </article>
             </div>
-
-<!--            <div id="loader" *ngIf="!currentArticle && !creationMode">-->
-<!--                <img src="../../assets/img/loading.gif" height="64"-->
-<!--                     width="64"/>-->
-<!--            </div>-->
-
         </div>
 
 
 
+
+
+
+<!--        Article protégé-->
         <div *ngIf="articleProtected">
             <mat-icon
                 (click)="this.router.navigate(['/article','new'])"
                 *ngIf="!creationMode"
                 aria-hidden="false"
-                aria-label="Example note_add icon">note_add
+                aria-label=" note_add icon">note_add
             </mat-icon>
             <h1>Vous n'êtes pas autorisé à voir ou éditer cet article</h1>
         </div>
 
-        <div *ngIf="notExist">
+
+
+
+
+<!--        Page L'article n'existe pas-->
+        <div *ngIf="articleNotExist">
             <h1>L'article n'existe pas...</h1>
         </div>
 
+
+
+
+
+
+<!--        Page d'accueil-->
         <div *ngIf="defaultMode" id="defaultMode">
             <mat-icon
                 (click)="this.router.navigate(['/article','new'])"
                 *ngIf="!creationMode"
                 aria-hidden="false"
-                aria-label="Example note_add icon">note_add
+                aria-label=" note_add icon">note_add
             </mat-icon>
             <h1>Bienvenue !</h1>
             <h1>Veuillez saisir un article dans la barre de recherche à
@@ -232,53 +250,111 @@
         </div>
 
     </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--    Section recherche-->
+
     <section id="search">
+
+
+<!--        Name                              logout -->
+<!--        ---------------------------------------- -->
+
         <div id="firstLineSearch">
             <h1 style="color: #4b4bfc">{{
                 auth.userSession.sessionUsername}}
-                <span *ngIf="auth.userSession.role === 'admin'">({{ auth.userSession.role }})</span>
+                <span
+                    *ngIf="auth.userSession.role === 'admin'">({{ auth.userSession.role }}
+                    )</span>
             </h1>
 
             <div (click)="logout()" id="logoutBar">
                 <button mat-raised-button color="basic">logout</button>
             </div>
         </div>
+
+
+        <!---------------------------------------------------- -->
+        <!--  search                                    { Go } -->
+        <!---------------------------------------------------- -->
+
         <div id="MainSearch">
 
-            <input  (keydown)="checkEnter($event)"
+            <input (keydown)="checkEnterSearch($event)"
                    [(ngModel)]="searchString"
                    placeholder="search"
                    type="text"
                    class="searchitem">
-<!--            [disabled]="searchString.length <= 2"-->
+
             <button (click)="mainSearch()"
-                style="position: absolute;top:2px;right:2px;border-radius:100px; "
+                    style="position: absolute;top:2px;right:2px;border-radius:100px; "
                     mat-raised-button
-                    color="basic">Go</button>
+                    color="basic">Go
+            </button>
         </div>
+
+
+
+
+        <!-------------------------------------------------------->
+        <!--  search by tag                       < select tri> -->
+        <!-------------------------------------------------------->
+
         <div id="tagSearch">
             <span *ngIf="this.tagProposal && tagString"
                   id="overText">{{this.tagProposal}}</span>
+            <label for="searchitem"></label>
             <input (keyup)="searchTag($event)" [(ngModel)]="tagString"
                    placeholder="search by tag"
-                   type="text" class="searchitem">
-            <select (change)="pickSorter()" name="order" id="order"
+                   type="text" class="searchitem" id="searchitem">
+            <label for="order"></label>
+            <select style="color: #0a0a0a;" (change)="pickSorter()"
+                    name="order" id="order"
                     [(ngModel)]="sortResults">
                 <option value="createdAt-asc">Ancien > Récent</option>
-                <option value="createdAt-desc">Récent > Ancien</option>
-                <option value="user-asc">Par Auteur</option>
+                <option selected value="createdAt-desc">Récent >
+                    Ancien
+                </option>
+                <option value="user@username-asc">Auteur A > Z</option>
+                <option value="user@username-desc">Auteur Z > A</option>
             </select>
         </div>
+
+
+
+        <!-------------------------------------------------------->
+        <!--  tag1 X    tag2 X   tag3X etc...                   -->
+        <!-------------------------------------------------------->
+
         <div id="listTagsSearched">
             <div *ngFor="let tag of article.tags |
                             selectedTagsSearch:true"
                  class="chosenTag">{{ tag['title'] }}
                 <mat-icon (click)="removeTagSearch(tag['id'])"
                           aria-hidden="false"
-                          aria-label="Example close icon">close
+                          aria-label=" close icon">close
                 </mat-icon>
             </div>
         </div>
+
+
+
+
+
+
+
+
 
         <div id="resultsSearch">
             <div *ngIf="foundArticles" id="numberResults">Number of
@@ -288,11 +364,11 @@
 
             <div id="searchZone">
                 <div
-                     (click)="goToArticle(article.id)"
-                     *ngFor="let article
+                    (click)="goToArticle(article.id)"
+                    *ngFor="let article
                  of
                 foundArticles"
-                      class="searchResult">
+                    class="searchResult">
                     <div class="lineTags">
                         <div *ngFor="let tag of article.Tag"
                              class="tagArtSearch">
@@ -315,12 +391,10 @@
                     </div>
                 </div>
             </div>
-
-<!--            <div id="loadMore">-->
-<!--                <button mat-raised-button color="primary">Load more</button>-->
-<!--            </div>-->
         </div>
     </section>
+
+
     <div id="editLoader" [ngClass]="{'displayed':article.isBusy}">
         <img src="../../assets/img/loading.gif" height="64"
              width="64"/>

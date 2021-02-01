@@ -44,7 +44,13 @@ export class MiscService {
                 if (key) {
                     const direction = sortObject[key];
 
-                    sorted = keySort(a[key], b[key], direction);
+                    if (key.includes('@')) {
+                        const key1 = key.split('@')[0];
+                        const key2 = key.split('@')[1];
+                        sorted = keySort(a[key1][key2], b[key1][key2], direction);
+                    } else {
+                        sorted = keySort(a[key], b[key], direction);
+                    }
                     index++;
                 }
             }

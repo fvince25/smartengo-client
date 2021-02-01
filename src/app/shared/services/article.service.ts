@@ -18,67 +18,13 @@ export class ArticleService {
         public http: HttpClient) {
     }
 
-    public addArticle(formData: { name: string, content: string, draft: string }, tags: any[]): Observable<Article> {
-
-        let infosArticle = {
-            name: formData.name,
-            content: formData.content,
-            draft: formData.draft,
-            tags: tags
-        };
-
-        return this.http.post<Article>('/api/article/addArticle', infosArticle).pipe(
-            tap((article: Article) => {
-                this.currentArticle = article;
-            })
-        );
 
 
-    }
+    //--------------------------------------------------------------------------
+    // Commun
+    //--------------------------------------------------------------------------
 
-    public updateArticle(formData: { name: string, content: string, draft: string}, id: string, tags: any[]): Observable<Article> {
-
-        let infosArticle = {
-            id: id,
-            name: formData.name,
-            content: formData.content,
-            draft: formData.draft,
-            tags: tags
-        };
-
-        return this.http.post<Article>('/api/article/updateArticle', infosArticle).pipe(
-            tap((article: Article) => {
-
-                this.currentArticle = article;
-            })
-        );
-
-
-    }
-
-    public addComment(textComment: string): Observable<Comment> {
-
-        const infosComment = {
-            text: textComment,
-            idArticle: this.currentArticle.id
-        }
-
-        return this.http.post<Comment>('/api/article/addComment', infosComment);
-
-
-    }
-
-
-    public getArticle(id: string): Observable<Article> {
-
-            return this.http.get<Article>('/api/article/getArticle?idArticle=' + id).pipe(
-                tap((article: Article)=> {
-                    this.currentArticle = article;
-                })
-            )
-    }
-
-    public downloadTags() {
+    public retrieveTags() : Promise<any> {
 
         return new Promise((resolve, reject)=> {
 
@@ -94,7 +40,6 @@ export class ArticleService {
                     resolve(this.tags);
                 })
 
-
             } else {
 
                 this.tags = this.tags.map(tag => {
@@ -108,19 +53,91 @@ export class ArticleService {
         });
     }
 
-    public searchArticles(query: string, searchedTags: any[]): Observable<Article[]> {
 
-        const infoSearch = {
-            query: query,
-            searchedTags: searchedTags
-        }
+    //--------------------------------------------------------------------------
+    // Edition / Creation
+    //--------------------------------------------------------------------------
 
-        return this.http.post<Article[]>('/api/article/searchArticles', infoSearch);
+    public addArticle(
+        formData: { name: string, content: string, draft: string },
+        tags: any[]
+
+    ) : Observable<Article> {
+
+        let infosArticle = {
+            name: formData.name,
+            content: formData.content,
+            draft: formData.draft,
+            tags: tags
+        };
+
+        return this.http.post<Article>('/api/article/addArticle', infosArticle).pipe(
+            tap((article: Article) => {
+                this.currentArticle = article;
+            })
+        );
     }
 
-    public deleteArticle(id) {
+
+    public updateArticle(
+
+        formData: { name: string, content: string, draft: string},
+        id: string,
+        tags: any[]
+
+    ): Observable<Article> {
+
+        let infosArticle = {
+            id: id,
+            name: formData.name,
+            content: formData.content,
+            draft: formData.draft,
+            tags: tags
+        };
+
+        return this.http.post<Article>('/api/article/updateArticle', infosArticle).pipe(
+            tap((article: Article) => {
+
+                this.currentArticle = article;
+            })
+        );
+    }
+
+    public deleteArticle(id): Observable<string> {
+
         return this.http.post<string>('/api/article/deleteArticle', {id:id});
     }
+
+
+
+
+
+
+
+    //--------------------------------------------------------------------------
+    // Lecture Article
+    //--------------------------------------------------------------------------
+
+    public addComment(textComment: string): Observable<Comment> {
+
+        const infosComment = {
+            text: textComment,
+            idArticle: this.currentArticle.id
+        }
+
+        return this.http.post<Comment>('/api/article/addComment', infosComment);
+    }
+
+
+    public getArticle(id: string): Observable<Article> {
+
+            return this.http.get<Article>('/api/article/getArticle?idArticle=' + id).pipe(
+                tap((article: Article)=> {
+                    this.currentArticle = article;
+                })
+            )
+    }
+
 
     public removeReaction(id:string): Observable<string> {
 
@@ -137,6 +154,33 @@ export class ArticleService {
         return this.http.post<any>('/api/article/addReaction', infosReaction);
 
     }
+
+
+
+
+
+
+
+
+
+
+    //--------------------------------------------------------------------------
+    // Recherche
+    //--------------------------------------------------------------------------
+
+    public searchArticles(query: string, searchedTags: any[]): Observable<Article[]> {
+
+        const infoSearch = {
+            query: query,
+            searchedTags: searchedTags
+        }
+
+        return this.http.post<Article[]>('/api/article/searchArticles', infoSearch);
+    }
+
+
+
+
 
 
 }

@@ -10,7 +10,7 @@ export interface Article {
     userId: string;
     createdAt: string;
     updateAt: string;
-    user: string;
+    username: string;
     isEditable: boolean;
 }
 
