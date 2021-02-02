@@ -35,7 +35,9 @@ export class ArticleComponent implements OnInit {
     public tagProposal: string = '';
     public tagString: string;
 
-    public foundArticles: Article[];
+    public foundArticles: Article[] = [];
+    public nextPage: string;
+    public totalResults: string;
     public waitingArticle;
     public sortResults='';
 
@@ -363,17 +365,30 @@ export class ArticleComponent implements OnInit {
     //-----------------------------------------------------------------------------
 
 
-    public mainSearch() : void {
+    public mainSearch(nextSearch: string = '') : void {
 
+        if (!nextSearch) {
+            this.article.nextPage = 1;
+        }
         this.article.searchArticles(
             this.searchString,
             this.article.tags.filter(t => t['selectedForSearch']).map(t => t['id'])
-        ).subscribe((articles) => {
-            this.foundArticles = articles;
+        ).subscribe((response) => {
+
+            if (nextSearch) {
+                this.foundArticles = this.foundArticles.concat(response.articles);
+            } else {
+                this.foundArticles = response.articles;
+            }
+            this.totalResults = response.totalResults;
             this.misc.multiSort(this.foundArticles, {'createdAt':'desc'})
         });
 
     }
+
+
+
+
 
     public checkEnterSearch(event) : void {
         if (event.key === 'Enter') {

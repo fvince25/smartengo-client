@@ -359,7 +359,7 @@
         <div id="resultsSearch">
             <div *ngIf="foundArticles" id="numberResults">Number of
                 results :
-                <span>{{ foundArticles.length }}</span>
+                <span>{{ this.totalResults }}</span>
             </div>
 
             <div id="searchZone">
@@ -391,6 +391,13 @@
                     </div>
                 </div>
             </div>
+
+            <button *ngIf="article.nextPage > 1" type="button"
+                    (click)="mainSearch('next')"
+                    mat-raised-button
+                    color="accent">Load More
+            </button>
+
         </div>
     </section>
 

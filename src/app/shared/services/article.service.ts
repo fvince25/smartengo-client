@@ -13,6 +13,7 @@ export class ArticleService {
     public currentArticle: Article;
     public isBusy: boolean = false;
     public tags: any = null;
+    public nextPage: number = 1;
 
     constructor(
         public http: HttpClient) {
@@ -168,15 +169,29 @@ export class ArticleService {
     // Recherche
     //--------------------------------------------------------------------------
 
-    public searchArticles(query: string, searchedTags: any[]): Observable<Article[]> {
+    public searchArticles(query: string, searchedTags: any[]): Observable<any> {
 
         const infoSearch = {
             query: query,
-            searchedTags: searchedTags
+            searchedTags: searchedTags,
+            pageNumber : this.nextPage
         }
 
-        return this.http.post<Article[]>('/api/article/searchArticles', infoSearch);
+        return this.http.post<any>('/api/article/searchArticles', infoSearch).pipe(
+            tap((repsonse) => {
+
+                    if (repsonse.nextPage !== "end") {
+                        this.nextPage = repsonse.nextPage;
+                    } else {
+                        this.nextPage = 1
+                    }
+
+                }
+            )
+        );
     }
+
+
 
 
 
